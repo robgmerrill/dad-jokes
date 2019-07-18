@@ -12,12 +12,16 @@ class JokeList extends Component {
   };
   constructor(props) {
     super(props);
-    this.state = { jokes: [] };
+    this.state = {
+      jokes: JSON.parse(window.localStorage.getItem("jokes") || "[]")
+    };
   }
   // The componentDidMount() method runs after the component output has been rendered to the DOM. 
-  async componentDidMount() {
+  componentDidMount() {
     // load jokes
-
+    if (this.state.jokes.length === 0) this.getJokes();
+  }
+  async getJokes() {
     let jokes = [];
     while (jokes.length < this.props.numJokesToGet) {
       let res = await axios.get("https://icanhazdadjoke.com/", {
@@ -27,7 +31,13 @@ class JokeList extends Component {
     }
     console.log(jokes);
     this.setState({ jokes: jokes });
+    window.localStorage.setItem(
+      "jokes",
+      JSON.stringify(jokes)
+    )
   }
+
+
   handleVote(id, delta) {
     this.setState(
       st => ({
